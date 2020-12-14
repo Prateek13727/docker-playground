@@ -1,0 +1,75 @@
+docker run -it debian bash
+
+apt-get install -y procps
+
+sudo docker build -t mav/tengine:2.3.2 .
+
+docker images
+
+docker container/image/volume prune 
+
+docker system prune
+
+-----------------------
+
+apt-get update
+
+apt-get install -y curl
+
+curl https://tengine.taobao.org/download/tengine-2.3.2.tar.gz > /opt/tengine-2.3.2.tar.gz
+tar xzf tengine-2.3.2
+
+cd tengine-2.3.2
+
+apt-get install -y gcc
+
+apt-get install libpcre3-dev
+
+apt-get install -y libssl-dev
+
+apt-get install -y zlib1g-dev
+
+./configure
+
+apt-get install -y make
+
+make
+
+make install
+
+/usr/local/nginx/sbin/nginx
+
+
+FROM debian
+
+RUN apt-get update && apt-get install -y \
+	curl \
+        gcc  \
+        libpcre3-dev \
+	libssl-dev \
+ 	zlib1g-dev \
+	make
+
+RUN curl https://tengine.taobao.org/download/tengine-2.3.2.tar.gz > /opt/tengine-2.3.2.tar.gz
+
+WORKDIR /opt
+
+RUN tar xzf tengine-2.3.2
+
+WORKDIR /opt/tengine-2.3.2
+
+RUN ./configure
+
+RUN make
+
+RUN make install
+
+RUN ln -sf /stdout/dev /usr/local/nginx/logs/access.log \
+    && ln -sf /dev/stderr /usr/local/nginx/logs/error.log
+
+EXPOSE 80
+
+CMD ["nginx", "-g", "daemon off;"]
+
+
+
